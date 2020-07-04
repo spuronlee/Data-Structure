@@ -1,0 +1,204 @@
+//方式一：
+
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+
+int main()
+{
+   ListNode* head = new ListNode(0);
+   ListNode* p = head;
+
+   for(int i=1;i<5;i++){
+        ListNode* q = new ListNode(2*i);
+		p->next = q;
+		p = p->next;
+   }
+
+	ListNode* m = head;
+	while (m != nullptr){
+		cout << m->val << "->";
+		m = m->next;
+	}
+
+   return 0;
+}
+
+//方式二：
+/*---------------------------------------
+The defination of the class LinkedNode.
+---------------------------------------*/
+template<class Type> class SLinkedList;
+
+template<class Type>
+class ListNode
+{
+private:
+	Type data;
+	ListNode* link;
+
+public:
+	ListNode():link(NULL){}
+	ListNode(Type d, ListNode* p=NULL):data(d), link(p){}
+	friend class SLinkedList<Type>;
+};
+
+/*---------------------------------------
+The defination of the class SLinkedList
+---------------------------------------*/
+template<class Type>
+class SLinkedList
+{
+private:
+	ListNode<Type>* head;
+
+public:
+	SLinkedList();
+	~SLinkedList();
+
+	void Empty();
+	int Length();
+	Type* Get(int index);
+	bool Set(Type value, int index);
+
+	ListNode<Type>* Find(int index);
+	bool Insert(Type value, int index);
+	void InsertBack(Type value);
+	bool Remove(int index);
+	void Print();
+};
+
+/*---------------------------------------
+The constructor and destructor the class
+SLinkedList
+---------------------------------------*/
+template<class Type>
+SLinkedList<Type>::SLinkedList()
+{
+	head = new ListNode<Type>;
+}
+
+template<class Type>
+SLinkedList<Type>::~SLinkedList()
+{
+	Empty();
+	delete head;
+}
+/*---------------------------------------
+Some bisic methods of the class SLinkedList
+---------------------------------------*/
+template<class Type>
+void SLinkedList<Type>::Empty()
+{
+	ListNode<Type>* temp=head->link;
+	while(temp)
+	{
+		head->link=temp->link;
+		delete temp;
+		temp=head->link;
+	}
+}
+
+template<class Type>
+void SLinkedList<Type>::Print()
+{
+	ListNode<Type>* temp=head->link;
+	cout<<"Start to print the list."<<endl;
+	while(temp)
+	{
+		cout<<temp->data<<endl;
+		temp=temp->link;
+	}
+	cout<<"The list is printed all."<<endl;
+}
+
+template<class Type>
+int SLinkedList<Type>::Length()
+{
+	int length=0;
+	ListNode<Type>* temp=head->link;
+
+	while(temp)
+	{
+		length++;
+		temp=temp->link;
+	}
+	return length;
+}
+
+template<class Type>
+Type* SLinkedList<Type>::Get(int index)
+{
+	ListNode<Type>* find=Find(index);
+	if(find)
+		return &find->data;
+	else
+		return NULL;
+}
+
+template<class Type>
+bool SLinkedList<Type>::Set(Type value, int index)
+{
+	ListNode<Type>* find=Find(index);
+	if(find)
+	{
+		find->data=value;
+		return true;
+	}
+	else
+		return false;
+}
+
+/*---------------------------------------
+Some core methods of the class SLinkedList
+---------------------------------------*/
+template<class Type>
+ListNode<Type>* SLinkedList<Type>::Find(int index)
+{
+	if(index<-1) return NULL;
+
+	ListNode<Type>* temp=head;
+	int current=-1;
+	while(temp && current<index)
+	{
+		temp=temp->link;
+		current++;
+	}
+	return temp;
+}
+
+template<class Type>
+bool SLinkedList<Type>::Insert(Type value, int index)
+{
+	ListNode<Type>* find=Find(index-1);
+	if(!find) return false;
+
+	ListNode<Type>* newNode= new ListNode<Type>(value, find->link);
+	find->link=newNode;
+	return true;
+}
+
+template<class Type>
+void SLinkedList<Type>::InsertBack(Type value)
+{
+	ListNode<Type>* temp=head;
+	while(temp->link) temp = temp->link;
+
+	ListNode<Type>* newNode= new ListNode<Type>(value);
+	temp->link = newNode;
+
+}
+
+template<class Type>
+bool SLinkedList<Type>::Remove(int index)
+{
+	ListNode<Type>* find = Find(index-1);
+	if(!find || !find->link) return false;
+
+	ListNode<Type>* temp=find->link;
+	find->link=temp->link;
+	delete temp;
+	return false;
+}
